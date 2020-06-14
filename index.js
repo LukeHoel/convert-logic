@@ -26,13 +26,10 @@ const DataTypes = {
 };
 
 const JSONOptions = {
-	type: "type",
 	dataType: "data-type",
-	classDeclaration: "class-declaration",
-	memberProperty: "member-property",
 	accessModifier: "access-modifier",
 	name: "name",
-	children: "children"
+	members: "members"
 };
 
 const JSONCode = (JSONObject) => ({
@@ -40,7 +37,7 @@ const JSONCode = (JSONObject) => ({
 	get dataType() { return JSONObject[JSONOptions.dataType] || ""; },
 	get accessModifier() { return JSONObject[JSONOptions.accessModifier] || ""; },
 	get name() { return JSONObject[JSONOptions.name] || ""; },
-	get children() { return (JSONObject[JSONOptions.children] || []).map(child => JSONCode(child)); },
+	get members() { return (JSONObject[JSONOptions.members] || []).map(member => JSONCode(member)); },
 });
 
 
@@ -50,23 +47,18 @@ const convertJSONToCSharp = (JSONObject) => {
 	
 	code = JSONCode(JSONObject);
 
-	switch(code.type) {
-		case JSONOptions.classDeclaration:
-			cSharpCode += `${code.accessModifier} class ${code.name} {`;			
-			
-			code.children.filter(child => child.type === JSONOptions.memberProperty)
-			.forEach(child => {
-				cSharpCode += `${child.accessModifier} ${child.dataType} ${child.name} { get; set;}`;	
-			});
+	cSharpCode += `${code.accessModifier} class ${code.name} {`;			
+	
+	code.members.forEach(member => {
+		cSharpCode += `${member.accessModifier} ${member.dataType} ${member.name} { get; set;}`;	
+	});
 
-			cSharpCode += "}";
+	cSharpCode += "}";
 
-		break;
-	}
 	return cSharpCode;
 };
 
-const convertLogic = () => {
+const generateModel = () => {
 	try {
 		let intermediateJSON;
 		switch(values.codeFromType) {

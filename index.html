@@ -8,7 +8,7 @@
 	<body>
 		<div class="convertLogic">
 			<div>
-				<textarea id="codeFrom" class="code" rows="20" cols="30"></textarea>
+				<textarea id="codeFrom" class="code"></textarea>
 				<br>
 				<select id="codeFromType" value="typescript">
 					<!--<option>C#</option>-->
@@ -17,7 +17,7 @@
 				</select>
 			</div>
 			<div>
-				<textarea id="codeTo" class="code" rows="20" cols="30"></textarea>
+				<textarea id="codeTo" class="code"></textarea>
 				<br>
 				<select id="codeToType" value="c#">
 					<option value="csharp">C#</option>
@@ -26,7 +26,7 @@
 			</div>
 
 		</div>
-		<button onclick="convertLogic()">Convert Logic</button>
+		<button onclick="generateModel()">Generate Model</button>
 		<div id="error"></div>
 		<script type="text/javascript" src="index.js"></script>
 	</body>
