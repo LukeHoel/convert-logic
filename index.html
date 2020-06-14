@@ -6,8 +6,28 @@
 		<link rel="stylesheet" href="index.css">
 	</head>
 	<body>
-		<textarea class="code codeFrom"></textarea>
-		<textarea class="code codeTo"></textarea>
+		<div class="convertLogic">
+			<div>
+				<textarea id="codeFrom" class="code" rows="20" cols="30"></textarea>
+				<br>
+				<select id="codeFromType" value="typescript">
+					<!--<option>C#</option>-->
+					<!--<option value="typescript">TypeScript</option>-->
+					<option value="json">JSON</option>
+				</select>
+			</div>
+			<div>
+				<textarea id="codeTo" class="code" rows="20" cols="30"></textarea>
+				<br>
+				<select id="codeToType" value="c#">
+					<option value="csharp">C#</option>
+					<!--<option>TypeScript</option>-->
+				</select>
+			</div>
+
+		</div>
+		<button onclick="convertLogic()">Convert Logic</button>
+		<div id="error"></div>
 		<script type="text/javascript" src="index.js"></script>
 	</body>
 </html>
