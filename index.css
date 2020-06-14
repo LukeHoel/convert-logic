@@ -1,12 +1,27 @@
 body {
-	margin: 5px;
+	font-family: roboto;
+	margin: 0;
+	font-size: 14px;
 }	
+.topBar {
+	width: 100vw;
+	height: 50px;
+	background-color: #0ea45e;
+	color: white;
+	display: flex;
+	align-items: center;
+	padding: 5px;
+	box-sizing: border-box;
+}
+.mainArea{
+	margin: 10px;
+}
 .convertLogic {
 	display: flex;
 	width: 100%;
 }
 .convertLogic > div {
-	margin: 5px;
+	margin: 0 5px 10px 0;
 	width: 50%;
 }
 textarea{
@@ -21,4 +36,12 @@ textarea{
 	color: red;
 	font-size: 12px;
 	margin-top: 5px;
+}
+.noSelect {
+	-webkit-touch-callout: none;
+	-webkit-user-select: none;
+	-khtml-user-select: none;
+	-moz-user-select: none;
+	-ms-user-select: none;
+	user-select: none;
 }

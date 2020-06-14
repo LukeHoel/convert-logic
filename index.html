@@ -4,30 +4,42 @@
 		<meta content="text/html;charset=utf-8" http-equiv="Content-Type">
 		<meta content="utf-8" http-equiv="encoding">
 		<link rel="stylesheet" href="index.css">
+		<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@9.17.1/build/styles/vs.min.css">
+		<link href="https://fonts.googleapis.com/css?family=Roboto:400,700&display=swap" rel="stylesheet">
+		<script src="https://cdnjs.cloudflare.com/ajax/libs/lodash.js/4.17.15/lodash.min.js"></script>
+		<script src="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@9.17.1/build/highlight.min.js"></script>
+		<script src="https://cdnjs.cloudflare.com/ajax/libs/js-beautify/1.10.2/beautify.js"></script>
 	</head>
 	<body>
-		<div class="convertLogic">
-			<div>
-				<textarea id="codeFrom" class="code"></textarea>
-				<br>
-				<select id="codeFromType" value="typescript">
-					<!--<option>C#</option>-->
-					<!--<option value="typescript">TypeScript</option>-->
-					<option value="json">JSON</option>
-				</select>
-			</div>
-			<div>
-				<textarea id="codeTo" class="code"></textarea>
-				<br>
-				<select id="codeToType" value="c#">
-					<option value="csharp">C#</option>
-					<!--<option>TypeScript</option>-->
-				</select>
-			</div>
+		<div class="topBar noSelect">Model Generator - By Luke Hoel</div>
+		<div class="mainArea">
+			<div class="convertLogic">
+				<div class="noSelect">
+					<textarea id="codeFrom" class="code"></textarea>
+					From
+					<select id="codeFromType" value="xml">
+						<!--<option>C#</option>-->
+						<!--<option value="typescript">TypeScript</option>-->
+						<option value="json">JSON</option>
+						<option value="xml">XML</option>
+					</select>
+					To
+					<select id="codeToType" value="c#">
+						<option value="csharp">C#</option>
+						<!--<option>TypeScript</option>-->
+					</select>
 
+				</div>
+				<div>
+					<!--<textarea id="codeTo" class="code"></textarea>-->
+					<pre><code id="codeTo"></code></pre>
+					<br>
+								</div>
+
+			</div>
+			<button onclick="generateModel()">Generate Model</button>
+			<div id="error"></div>
 		</div>
-		<button onclick="generateModel()">Generate Model</button>
-		<div id="error"></div>
 		<script type="text/javascript" src="index.js"></script>
 	</body>
 </html>

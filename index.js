@@ -12,7 +12,7 @@ const values = {
 		return document.getElementById("codeToType").value;
 	},
 	set codeTo(newValue) {
-		document.getElementById("codeTo").value = newValue;
+		document.getElementById("codeTo").innerText = newValue;
 	},
 	set error(newValue) {
 		document.getElementById("error").innerText = newValue;
@@ -25,32 +25,69 @@ const DataTypes = {
 	DOUBLE: "double"
 };
 
-const JSONOptions = {
-	dataType: "data-type",
-	accessModifier: "access-modifier",
-	name: "name",
-	members: "members"
+
+const XMLOptions = {
+	dataType: "type",
+	accessModifier: "access",
 };
 
+const convertXMLToJSON = (XMLObject) => {
+	let code = JSONCode({});
+	const main = XMLObject.documentElement;
+
+	if(main.tagName === "parsererror") {
+		values.error = "The xml parsing may have failed";
+	}
+
+	code.name = main.tagName;
+	code.accessModifier = main.getAttribute(XMLOptions.accessModifier);
+	
+	const members = [];
+
+	for(const child of main.children){
+		const member = JSONCode({});
+		member.name = child.tagName;
+		member.accessModifier = child.getAttribute(XMLOptions.accessModifier);
+		member.dataType = child.getAttribute(XMLOptions.dataType);
+		members.push(member);
+	}
+
+	code.members = members;
+	console.log(code.members);
+	return code;
+};
+
+const JSONOptions = {
+	name: "name",
+	accessModifier: "access-modifier",
+	dataType: "data-type",
+	members: "members"
+}
+
 const JSONCode = (JSONObject) => ({
-	get type() { return JSONObject[JSONOptions.type] || ""; },
+	get raw() { return JSONObject; },
+
 	get dataType() { return JSONObject[JSONOptions.dataType] || ""; },
+	set dataType(newValue) { JSONObject[JSONOptions.dataType] = newValue; },
+
 	get accessModifier() { return JSONObject[JSONOptions.accessModifier] || ""; },
+	set accessModifier(newValue) { JSONObject[JSONOptions.accessModifier] = newValue; },
+
 	get name() { return JSONObject[JSONOptions.name] || ""; },
+	set name(newValue) { JSONObject[JSONOptions.name] = newValue; },
+
 	get members() { return (JSONObject[JSONOptions.members] || []).map(member => JSONCode(member)); },
+	set members(newValue) { JSONObject[JSONOptions.members] = (newValue || []).map(member => member.raw); },
 });
 
+const pascalCase = (input) => `${input[0].toUpperCase()}${_.camelCase(input.substring(1))}`
 
-
-const convertJSONToCSharp = (JSONObject) => {
+const convertJSONToCSharp = (code) => {
 	let cSharpCode = "";
-	
-	code = JSONCode(JSONObject);
-
-	cSharpCode += `${code.accessModifier} class ${code.name} {`;			
+	cSharpCode += `${code.accessModifier.toLowerCase()} class ${pascalCase(code.name)} {`;			
 	
 	code.members.forEach(member => {
-		cSharpCode += `${member.accessModifier} ${member.dataType} ${member.name} { get; set;}`;	
+		cSharpCode += `${member.accessModifier.toLowerCase()} ${member.dataType} ${pascalCase(member.name)} { get; set;}`;	
 	});
 
 	cSharpCode += "}";
@@ -60,10 +97,14 @@ const convertJSONToCSharp = (JSONObject) => {
 
 const generateModel = () => {
 	try {
+		values.error = "";
 		let intermediateJSON;
 		switch(values.codeFromType) {
+			case "xml":
+				intermediateJSON = convertXMLToJSON(new DOMParser().parseFromString(values.codeFrom , "text/xml"));
+			break;
 			case "json":
-				intermediateJSON = JSON.parse(values.codeFrom);
+				intermediateJSON = JSONCode(JSON.parse(values.codeFrom));
 			break;
 		}
 		let finalCodeTo;
@@ -72,7 +113,8 @@ const generateModel = () => {
 				finalCodeTo = convertJSONToCSharp(intermediateJSON);	
 			break;
 		}
-		values.codeTo = finalCodeTo;
+		values.codeTo = js_beautify(finalCodeTo);
+		document.querySelectorAll("pre code").forEach(block => hljs.highlightBlock(block));
 	}
 	catch (e) {
 		values.error = e;
