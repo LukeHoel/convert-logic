@@ -147,6 +147,12 @@ const convertJSONToTypeScript = (code) => {
 };
 
 const generateModel = () => {
+	
+	if(values.codeFrom === "") {
+		values.codeTo = "";
+		return;
+	}
+
 	try {
 		values.error = "";
 		let intermediateJSON;
