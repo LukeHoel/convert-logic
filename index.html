@@ -15,12 +15,12 @@
 		<div class="mainArea">
 			<div class="convertLogic">
 				<div class="noSelect">
-					<textarea id="codeFrom" class="code"></textarea>
-					From
-					<select id="codeFromType" value="xml">
-						<option value="xml">XML</option>
-						<option value="json">JSON</option>
-					</select>
+					<textarea id="codeFrom" class="code" placeholder='Example:
+<knight access="public">
+	<armour type="int" access="public"></armour>
+</knight>'></textarea>
+					From XML
+					<input type="hidden" id="codeFromType" value="xml">
 					To
 					<select id="codeToType" value="c#">
 						<option value="csharp">C#</option>
