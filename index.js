@@ -84,7 +84,6 @@ const convertXMLToJSON = (XMLObject) => {
 	}
 
 	code.members = members;
-	console.log(code.members);
 	return code;
 };
 
