@@ -22,7 +22,38 @@ const values = {
 const DataTypes = {
 	INT: "int",
 	FLOAT: "float",
-	DOUBLE: "double"
+	DOUBLE: "double",
+	CHAR: "char",
+	STRING: "string",
+	cSharp: (dataType) => { 
+		switch(dataType) {
+			case "":
+				return "object"
+			break;
+			default:
+				return dataType;
+			break;
+		}
+	},
+	typeScript: (dataType) => { 
+		switch(dataType) {
+			case DataTypes.INT:
+			case DataTypes.FLOAT:
+			case DataTypes.DOUBLE:
+				return "number";
+			break;
+			case DataTypes.CHAR:
+			case DataTypes.STRING:
+				return "string";
+			break;
+			case "":
+				return "any"
+			break;
+			default:
+				return dataType;
+			break;
+		}
+	} 
 };
 
 
@@ -34,14 +65,14 @@ const XMLOptions = {
 const convertXMLToJSON = (XMLObject) => {
 	let code = JSONCode({});
 	const main = XMLObject.documentElement;
-
+	
 	if(main.tagName === "parsererror") {
 		values.error = "The xml parsing may have failed";
 	}
 
 	code.name = main.tagName;
 	code.accessModifier = main.getAttribute(XMLOptions.accessModifier);
-	
+
 	const members = [];
 
 	for(const child of main.children){
@@ -70,10 +101,10 @@ const JSONCode = (JSONObject) => ({
 	get dataType() { return JSONObject[JSONOptions.dataType] || ""; },
 	set dataType(newValue) { JSONObject[JSONOptions.dataType] = newValue; },
 
-	get accessModifier() { return JSONObject[JSONOptions.accessModifier] || ""; },
+	get accessModifier() { return JSONObject[JSONOptions.accessModifier] || "public"; },
 	set accessModifier(newValue) { JSONObject[JSONOptions.accessModifier] = newValue; },
 
-	get name() { return JSONObject[JSONOptions.name] || ""; },
+	get name() { return JSONObject[JSONOptions.name] || "NoName"; },
 	set name(newValue) { JSONObject[JSONOptions.name] = newValue; },
 
 	get members() { return (JSONObject[JSONOptions.members] || []).map(member => JSONCode(member)); },
@@ -84,15 +115,35 @@ const pascalCase = (input) => `${input[0].toUpperCase()}${_.camelCase(input.subs
 
 const convertJSONToCSharp = (code) => {
 	let cSharpCode = "";
+
 	cSharpCode += `${code.accessModifier.toLowerCase()} class ${pascalCase(code.name)} {`;			
 	
 	code.members.forEach(member => {
-		cSharpCode += `${member.accessModifier.toLowerCase()} ${member.dataType} ${pascalCase(member.name)} { get; set;}`;	
+		cSharpCode += `${member.accessModifier.toLowerCase()} ${DataTypes.cSharp(member.dataType)} ${pascalCase(member.name)} { get; set;}`;	
 	});
 
 	cSharpCode += "}";
 
 	return cSharpCode;
+};
+
+const convertJSONToTypeScript = (code) => {
+	let typeScriptCode = "";
+
+	const members = code.members;
+
+	const shouldBeClass = members.findIndex(member => member.accessModifier.toLowerCase() !== "public" && member.accessModifier !== "") !== -1;
+
+	typeScriptCode += `${code.accessModifier.toLowerCase() === "public" ? "export" : ""} ${shouldBeClass ? "class" : "interface"} ${pascalCase(code.name)} {`;			
+	
+	members.forEach(member => {
+		const accessModifier = member.accessModifier.toLowerCase();
+		typeScriptCode += `${accessModifier !== "public" ? accessModifier : "" } ${_.camelCase(member.name)} : ${DataTypes.typeScript(member.dataType)};`;	
+	});
+
+	typeScriptCode += "}";
+
+	return typeScriptCode;
 };
 
 const generateModel = () => {
@@ -111,6 +162,9 @@ const generateModel = () => {
 		switch(values.codeToType) {
 			case "csharp":
 				finalCodeTo = convertJSONToCSharp(intermediateJSON);	
+			break;
+			case "typescript":
+				finalCodeTo = convertJSONToTypeScript(intermediateJSON);	
 			break;
 		}
 		values.codeTo = js_beautify(finalCodeTo);
