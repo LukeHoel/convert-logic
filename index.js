@@ -115,10 +115,10 @@ const pascalCase = (input) => `${input[0].toUpperCase()}${_.camelCase(input.subs
 const convertJSONToCSharp = (code) => {
 	let cSharpCode = "";
 
-	cSharpCode += `${code.accessModifier.toLowerCase()} class ${pascalCase(code.name)} {`;			
+	cSharpCode += `${code.accessModifier.toLowerCase()} class ${pascalCase(code.name)} {\n`;			
 	
 	code.members.forEach(member => {
-		cSharpCode += `${member.accessModifier.toLowerCase()} ${DataTypes.cSharp(member.dataType)} ${pascalCase(member.name)} { get; set;}`;	
+		cSharpCode += `\t${member.accessModifier.toLowerCase()} ${DataTypes.cSharp(member.dataType)} ${pascalCase(member.name)} { get; set; }\n`;	
 	});
 
 	cSharpCode += "}";
@@ -133,11 +133,11 @@ const convertJSONToTypeScript = (code) => {
 
 	const shouldBeClass = members.findIndex(member => member.accessModifier.toLowerCase() !== "public" && member.accessModifier !== "") !== -1;
 
-	typeScriptCode += `${code.accessModifier.toLowerCase() === "public" ? "export" : ""} ${shouldBeClass ? "class" : "interface"} ${pascalCase(code.name)} {`;			
+	typeScriptCode += `${code.accessModifier.toLowerCase() === "public" ? "export" : ""} ${shouldBeClass ? "class" : "interface"} ${pascalCase(code.name)} {\n`;			
 	
 	members.forEach(member => {
 		const accessModifier = member.accessModifier.toLowerCase();
-		typeScriptCode += `${accessModifier !== "public" ? accessModifier : "" } ${_.camelCase(member.name)} : ${DataTypes.typeScript(member.dataType)};`;	
+		typeScriptCode += `\t${accessModifier !== "public" ? accessModifier : "" } ${_.camelCase(member.name)}: ${DataTypes.typeScript(member.dataType)};\n`;	
 	});
 
 	typeScriptCode += "}";
@@ -172,7 +172,7 @@ const generateModel = () => {
 				finalCodeTo = convertJSONToTypeScript(intermediateJSON);	
 			break;
 		}
-		values.codeTo = js_beautify(finalCodeTo);
+		values.codeTo = finalCodeTo;
 		document.querySelectorAll("pre code").forEach(block => hljs.highlightBlock(block));
 	}
 	catch (e) {
